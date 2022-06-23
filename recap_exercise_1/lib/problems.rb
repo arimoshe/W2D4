@@ -6,7 +6,14 @@
 #
 # all_vowel_pairs(["goat", "action", "tear", "impromptu", "tired", "europe"])   # => ["action europe", "tear impromptu"]
 def all_vowel_pairs(words)
-
+    out=[]
+    (0...words.length).each do |i| 
+        (i...words.length).each do |j|
+            joined = words[i] + " " + words[j]
+            out <<  joined if "aeiou".split("").all? {|letter| joined.include?(letter)}
+        end
+    end
+    out
 end
 
 
@@ -18,7 +25,8 @@ end
 # composite?(9)     # => true
 # composite?(13)    # => false
 def composite?(num)
-
+    (2...num).each {|i| return true if  num % i == 0 }
+    false
 end
 
 
@@ -32,7 +40,7 @@ end
 # find_bigrams("the theater is empty", ["cy", "em", "ty", "ea", "oo"])  # => ["em", "ty", "ea"]
 # find_bigrams("to the moon and back", ["ck", "oo", "ha", "at"])        # => ["ck", "oo"]
 def find_bigrams(str, bigrams)
-
+    bigrams.map{ |ele| ele if str.include?(ele)}.compact
 end
 
 class Hash
@@ -50,6 +58,14 @@ class Hash
     # hash_2.my_select { |k, v| k + 1 == v }      # => {10=>11, 5=>6, 7=>8})
     # hash_2.my_select                            # => {4=>4}
     def my_select(&prc)
+        prc ||= Proc.new do |arg1,arg2| 
+            arg1 == arg2
+        end
+        out2={}
+        self.each {|k,v| out2[k] = v if prc.call(k,v)}
+        out2
+        
+
 
     end
 end
@@ -64,7 +80,17 @@ class String
     # "cats".substrings     # => ["c", "ca", "cat", "cats", "a", "at", "ats", "t", "ts", "s"]
     # "cats".substrings(2)  # => ["ca", "at", "ts"]
     def substrings(length = nil)
-
+        out = []
+        self.each_char.with_index do |ele,i| 
+            self.each_char.with_index do |el, j|
+                out << self[i..j] if j >= i
+            end
+        end
+        if length
+        out.select {|ele| !ele[length] && ele[-length]}
+        else
+            out
+        end
     end
 
 
@@ -77,7 +103,8 @@ class String
     # "apple".caesar_cipher(1)    #=> "bqqmf"
     # "bootcamp".caesar_cipher(2) #=> "dqqvecor"
     # "zebra".caesar_cipher(4)    #=> "difve"
-    def caesar_cipher(num)
-
+    def caesar_cipher(num)\
+        letters = ("a".."z").to_a
+        self.split("").map{ |char| letters[(((letters.index(char) + 1 + num) % 26) - 1)]}.join("")
     end
 end
